@@ -1,0 +1,86 @@
+diff --git a/config.def.h b/config.def.h
+index 1c0b587..d8be3bb 100644
+--- a/config.def.h
++++ b/config.def.h
+@@ -5,6 +5,9 @@ static const unsigned int borderpx  = 1;        /* border pixel of windows */
+ static const unsigned int snap      = 32;       /* snap pixel */
+ static const int showbar            = 1;        /* 0 means no bar */
+ static const int topbar             = 1;        /* 0 means bottom bar */
++static const char *even_tag_char[2]  = {" ", " "};      /*Use this to make the tags have constant width, it show be as long as the longest consecutive dynamic characters*/
++static const char *sel_tag_char[2]   = {"{", "}"}; /* Use this to change the selected tags character*/
++static const char *occ_tag_char[2]   = {"*", " "}; /*Use this to change the occupied tag characters, if the tag is selected, it gets overwritten by the selected tag characters*/
+ static const char *fonts[]          = { "monospace:size=10" };
+ static const char dmenufont[]       = "monospace:size=10";
+ static const char col_gray1[]       = "#222222";
+diff --git a/dwm.c b/dwm.c
+index 9fd0286..e1fe961 100644
+--- a/dwm.c
++++ b/dwm.c
+@@ -422,7 +422,7 @@ buttonpress(XEvent *e)
+ 	Client *c;
+ 	Monitor *m;
+ 	XButtonPressedEvent *ev = &e->xbutton;
+-
++	char aux_tag[10];
+ 	click = ClkRootWin;
+ 	/* focus monitor if necessary */
+ 	if ((m = wintomon(ev->window)) && m != selmon) {
+@@ -430,11 +431,14 @@ buttonpress(XEvent *e)
+ 		selmon = m;
+ 		focus(NULL);
+ 	}
+ 	if (ev->window == selmon->barwin) {
+ 		i = x = 0;
+-		do
+-			x += TEXTW(tags[i]);
+-		while (ev->x >= x && ++i < LENGTH(tags));
++		do {
++			strcpy(aux_tag, even_tag_char[0]);
++			strcat(aux_tag, tags[i]);
++			strcat(aux_tag, even_tag_char[1]);
++			x += TEXTW(aux_tag);
++		} while(ev->x >= x && ++i < LENGTH(tags));
+ 		if (i < LENGTH(tags)) {
+ 			click = ClkTagBar;
+ 			arg.ui = 1 << i;
+@@ -701,7 +709,7 @@ drawbar(Monitor *m)
+ 	int boxw = drw->fonts->h / 6 + 2;
+ 	unsigned int i, occ = 0, urg = 0;
+ 	Client *c;
+-
++	char aux_tag[10];
+ 	/* draw status first so it can be overdrawn by tags later */
+ 	if (m == selmon) { /* status is only drawn on selected monitor */
+ 		drw_setscheme(drw, scheme[SchemeNorm]);
+@@ -716,13 +724,25 @@ drawbar(Monitor *m)
+ 	}
+ 	x = 0;
+ 	for (i = 0; i < LENGTH(tags); i++) {
+-		w = TEXTW(tags[i]);
++		strcpy(aux_tag, even_tag_char[0]);
++		strcat(aux_tag, tags[i]);
++		strcat(aux_tag, even_tag_char[1]);
++		w = TEXTW(aux_tag);
++		if(occ & 1 << i){
++			strcpy(aux_tag, occ_tag_char[0]);
++			strcat(aux_tag, tags[i]);
++			strcat(aux_tag, occ_tag_char[1]);
++
++		}
++		if(m->tagset[m->seltags] & 1 << i){
++			strcpy(aux_tag, sel_tag_char[0]);
++			strcat(aux_tag, tags[i]);
++			strcat(aux_tag, sel_tag_char[1]);
++		}
++
+ 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+-		drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+-		if (occ & 1 << i)
+-			drw_rect(drw, x + boxs, boxs, boxw, boxw,
+-				m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
+-				urg & 1 << i);
++
++		drw_text(drw, x, 0, w, bh, lrpad / 2, aux_tag, urg & 1 << i);
+ 		x += w;
+ 	}
+ 	w = blw = TEXTW(m->ltsymbol);

@@ -1,0 +1,28 @@
+#!/bin/sh
+echo "Reseting..."
+git reset --hard HEAD &>/dev/null
+git pull &>/dev/null
+git reset --hard HEAD &>/dev/null
+echo "Reset"
+combined_patches=./patches/everything.diff
+if test -f "$combined_patches"; then
+	echo "Applying combined patches in $combined_patches"
+	git apply -3v "$combined_patches" &> /dev/null
+else
+	for file in ./patches/*.diff
+	do
+		echo "Applying $file"
+		git apply -3v "$file" &> /dev/null
+	done
+fi
+FILE=./config.bk.h
+if test -f "$FILE"; then
+	echo "Would you like to copy config.h.bk to config.h?"
+	select yn in "Yes" "No"; do
+	    case $yn in
+		Yes ) cp "$FILE" ./config.h; break;;
+		No ) exit;;
+	    esac
+	done
+fi
+echo "Finished!"
