@@ -378,7 +378,7 @@ index 9fd0286..1befee4 100644
 +		return NULL;
 +
 +	for (m = mons; m; m = m->next) {
-+		for (c = m->clients; c; c = c->next) {
++		for (c = m->cl->clients; c; c = c->next) {
 +			if (c->isterminal && !c->swallowing && c->pid && isdescprocess(c->pid, w->pid))
 +				return c;
 +		}
@@ -394,7 +394,7 @@ index 9fd0286..1befee4 100644
 +	Monitor *m;
 +
 +	for (m = mons; m; m = m->next) {
-+		for (c = m->clients; c; c = c->next) {
++		for (c = m->cl->clients; c; c = c->next) {
 +			if (c->swallowing && c->swallowing->win == w)
 +				return c;
 +		}
