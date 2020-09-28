@@ -895,7 +895,11 @@ drawbar(Monitor *m)
 
 		drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
 
+<<<<<<< ours
 		drw_text(drw, x, texty, w, bh+abs(texty), lrpad / 2, aux_tag, urg & 1 << i);
+=======
+		drw_text(drw, x, 0, w, bh, lrpad / 2, aux_tag, urg & 1 << i);
+>>>>>>> theirs
 		x += w;
 	}
 	w = blw = TEXTW(m->ltsymbol);

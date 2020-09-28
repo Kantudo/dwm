@@ -199,7 +199,7 @@ index 9fd0286..50dbbaf 100644
 +void
 +incrivgaps(const Arg *arg)
 +{
-+	setgaps(
++	setgaps(:w
 +		selmon->gappoh,
 +		selmon->gappov,
 +		selmon->gappih,
@@ -210,7 +210,7 @@ index 9fd0286..50dbbaf 100644
  void
  setlayout(const Arg *arg)
  {
-@@ -1674,28 +1798,34 @@ tagmon(const Arg *arg)
+@@ -1674,27 +1798,33 @@ tagmon(const Arg *arg)
  void
  tile(Monitor *m)
  {
@@ -218,7 +218,7 @@ index 9fd0286..50dbbaf 100644
 +	unsigned int i, n, h, r, oe = enablegaps, ie = enablegaps, mw, my, ty;
  	Client *c;
 
- 	for (n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+ 	for (n = 0, c = nexttiled(m->cl->clients, m); c; c = nexttiled(c->next, m), n++);
  	if (n == 0)
  		return;
 
@@ -231,9 +231,9 @@ index 9fd0286..50dbbaf 100644
 +		mw = m->nmaster ? (m->ww + m->gappiv*ie) * m->mfact : 0;
  	else
 -		mw = m->ww;
--	for (i = my = ty = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+-	for (i = my = ty = 0, c = nexttiled(m->cl->clients, m); c; c = nexttiled(c->next, m), i++)
 +		mw = m->ww - 2*m->gappov*oe + m->gappiv*ie;
-+	for (i = 0, my = ty = m->gappoh*oe, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
++	for (i = 0, my = ty = m->gappoh*oe, c = nexttiled(m->cl->clients, m); c; c = nexttiled(c->next, m), i++)
  		if (i < m->nmaster) {
 -			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
 -			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), 0);
