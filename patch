@@ -1,9 +1,9 @@
 #!/bin/sh
-echo "Reseting..."
-git reset --hard HEAD &>/dev/null
-git pull &>/dev/null
-git reset --hard HEAD &>/dev/null
-echo "Reset"
+#echo "Reseting..."
+#git reset --hard HEAD &>/dev/null
+#git pull &>/dev/null
+#git reset --hard HEAD &>/dev/null
+#echo "Reset"
 combined_patches=./patches/everything.diff
 if test -f "$combined_patches"; then
 	echo "Applying combined patches in $combined_patches"
